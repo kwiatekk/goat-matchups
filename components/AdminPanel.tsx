@@ -14,7 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusCircle, Pencil, Trash2, Upload, BarChart, PieChart, TrendingUp, Download } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { useForm, SubmitHandler } from "react-hook-form"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Toast } from "@/components/ui/toast"
 import { useSession, signOut } from "next-auth/react"
 
@@ -50,7 +50,6 @@ export default function AdminPanel() {
     const [error, setError] = useState<string | null>(null)
     const [showToast, setShowToast] = useState(false)
     const [toastMessage, setToastMessage] = useState('')
-    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
     const [itemToDelete, setItemToDelete] = useState<number | null>(null)
 
     const router = useRouter()
@@ -121,7 +120,7 @@ export default function AdminPanel() {
             setError('Failed to delete matchup. Please try again.')
         } finally {
             setIsLoading(false)
-            setDeleteConfirmOpen(false)
+            setItemToDelete(null)
         }
     }
 
@@ -370,9 +369,11 @@ export default function AdminPanel() {
                                                 <TableCell>
                                                     <div className="flex space-x-2">
                                                         <Button variant="outline" size="sm"><Pencil className="h-4 w-4" /></Button>
-                                                        <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+                                                        <Dialog>
                                                             <DialogTrigger asChild>
-                                                                <Button variant="outline" size="sm" onClick={() => setItemToDelete(matchup.id)}><Trash2 className="h-4 w-4" /></Button>
+                                                                <Button variant="outline" size="sm" onClick={() => setItemToDelete(matchup.id)}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
                                                             </DialogTrigger>
                                                             <DialogContent>
                                                                 <DialogHeader>
@@ -381,9 +382,11 @@ export default function AdminPanel() {
                                                                         This action cannot be undone.
                                                                     </DialogDescription>
                                                                 </DialogHeader>
-                                                                <div className="flex justify-end space-x-2">
-                                                                    <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
-                                                                    <Button variant="destructive" onClick={() => itemToDelete && handleDeleteMatchup(itemToDelete)}>Delete</Button>
+                                                                <div className="flex justify-end space-x-2 mt-4">
+                                                                    <Button variant="outline" onClick={() => setItemToDelete(null)}>Cancel</Button>
+                                                                    <Button variant="destructive" onClick={() => itemToDelete && handleDeleteMatchup(itemToDelete)}>
+                                                                        Delete
+                                                                    </Button>
                                                                 </div>
                                                             </DialogContent>
                                                         </Dialog>
@@ -448,7 +451,7 @@ export default function AdminPanel() {
                                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                                         <Upload className="mx-auto h-12 w-12 text-gray-400" />
                                         <p className="mt-2 text-sm text-gray-600">Drag and drop images here, or click to select files</p>
-                                        <Input id="image-upload" type="file" accept="image/*" multiple className="hidden" />
+                                        <Input id="image-upload" type="file" accept="image/*" multiple className="hidden" onChange={uploadImage} />
                                         <Button variant="outline" className="mt-4">
                                             <Label htmlFor="image-upload" className="cursor-pointer">Select Files</Label>
                                         </Button>
@@ -464,7 +467,9 @@ export default function AdminPanel() {
             </main>
 
             {showToast && (
-                <Toast message={toastMessage} onClose={() => setShowToast(false)} />
+                <Toast>
+                    {toastMessage}
+                </Toast>
             )}
         </div>
     )
