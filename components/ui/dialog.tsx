@@ -12,7 +12,7 @@ interface DialogProps {
   children: React.ReactNode;
   size?: 'small' | 'medium' | 'large';
   showCloseButton?: boolean;
-  initialFocus?: React.RefObject<HTMLElement>; // Add this prop for initial focus
+  initialFocus?: React.RefObject<HTMLElement>;
 }
 
 const dialogVariants = {
@@ -20,7 +20,7 @@ const dialogVariants = {
   visible: { opacity: 1, scale: 1 },
 };
 
-export const DialogHeader: React.FC = ({ children }) => (
+export const DialogHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="mb-4 flex justify-between items-center">{children}</div> 
 );
 
@@ -28,7 +28,7 @@ export const DialogTitle: React.FC<{ children: React.ReactNode; id?: string }> =
   <h2 id={id} className="text-xl font-bold">{children}</h2>
 );
 
-export const DialogContent: React.FC = ({ children }) => (
+export const DialogContent: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="mb-6">{children}</div>
 );
 
@@ -44,7 +44,7 @@ export const DialogTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTM
 
 DialogTrigger.displayName = 'DialogTrigger'
 
-export const DialogDescription: React.FC = ({ children }) => (
+export const DialogDescription: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <p className="text-sm text-gray-500">{children}</p>
 )
 
@@ -56,7 +56,7 @@ export const Dialog: React.FC<DialogProps> = ({
   children,
   size = 'medium',
   showCloseButton = true,
-  initialFocus // Use the initialFocus prop
+  initialFocus
 }) => {
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
