@@ -464,9 +464,7 @@ export default function AdminPanel() {
             </main>
 
             {showToast && (
-                <Toast>
-                    {toastMessage}
-                </Toast>
+                <Toast message={toastMessage} onClose={() => setShowToast(false)} />
             )}
         </div>
     )

@@ -3,7 +3,7 @@ import { kv } from '@vercel/kv'
 
 export async function GET() {
     try {
-        const matchups = await kv.get('matchups') || []
+        const matchups = await kv.get<any[]>('matchups') || []
         return NextResponse.json(matchups)
     } catch (error) {
         console.error('Error fetching matchups:', error)
@@ -14,7 +14,7 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const data = await request.json()
-        const matchups = await kv.get('matchups') || []
+        const matchups = await kv.get<any[]>('matchups') || []
         const newMatchup = { id: Date.now(), ...data, views: 0, downloads: 0 }
         await kv.set('matchups', [...matchups, newMatchup])
         return NextResponse.json(newMatchup, { status: 201 })
@@ -27,8 +27,8 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
     const id = request.url.split('/').pop()
     try {
-        const matchups = await kv.get('matchups') || []
-        const updatedMatchups = matchups.filter((m: any) => m.id !== Number(id))
+        const matchups = await kv.get<any[]>('matchups') || []
+        const updatedMatchups = matchups.filter((m) => m.id !== Number(id))
         await kv.set('matchups', updatedMatchups)
         return NextResponse.json({ message: 'Matchup deleted successfully' })
     } catch (error) {
