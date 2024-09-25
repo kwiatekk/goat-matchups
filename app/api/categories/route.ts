@@ -14,8 +14,18 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const { name } = await request.json()
-        const categories = await kv.get('categories') || []
+
+        // Ensure categories is an array
+        let categories = await kv.get('categories')
+
+        // If categories is not an array, assign it to an empty array
+        if (!Array.isArray(categories)) {
+            categories = []
+        }
+
+        // Add the new category
         await kv.set('categories', [...categories, name])
+
         return NextResponse.json({ message: 'Category added successfully', category: name }, { status: 201 })
     } catch (error) {
         console.error('Error creating category:', error)
