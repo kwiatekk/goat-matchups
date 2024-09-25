@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import AdminPanel from '@/components/AdminPanel'
 
 export default function AdminPage() {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const router = useRouter()
 
   if (status === "loading") {

@@ -1,50 +1,38 @@
-import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
-
-interface Matchup {
-  id: string;
-  title: string;
-  category: string;
-  image: string;
-  views: number;
-  downloads: number;
-}
+import { NextResponse } from 'next/server'
+import { kv } from '@vercel/kv'
 
 export async function GET() {
-  try {
-    // Fetch matchups from your KV store
-    const matchups: Matchup[] = await kv.get('matchups') || [];
-    return NextResponse.json(matchups);
-  } catch (error) {
-    console.error('Error fetching matchups:', error);
-    return NextResponse.json({ error: 'Failed to fetch matchups' }, { status: 500 });
-  }
+    try {
+        const matchups = await kv.get('matchups') || []
+        return NextResponse.json(matchups)
+    } catch (error) {
+        console.error('Error fetching matchups:', error)
+        return NextResponse.json({ error: 'Failed to fetch matchups' }, { status: 500 })
+    }
 }
 
 export async function POST(request: Request) {
-  try {
-    const data = await request.json();
-    const newMatchup: Matchup = {
-      id: Date.now().toString(),
-      title: data.title,
-      category: data.category,
-      image: data.image,
-      views: 0,
-      downloads: 0,
-    };
+    try {
+        const data = await request.json()
+        const matchups = await kv.get('matchups') || []
+        const newMatchup = { id: Date.now(), ...data, views: 0, downloads: 0 }
+        await kv.set('matchups', [...matchups, newMatchup])
+        return NextResponse.json(newMatchup, { status: 201 })
+    } catch (error) {
+        console.error('Error creating matchup:', error)
+        return NextResponse.json({ error: 'Failed to create matchup' }, { status: 500 })
+    }
+}
 
-    // Get existing matchups
-    const existingMatchups: Matchup[] = await kv.get('matchups') || [];
-
-    // Add new matchup
-    const updatedMatchups = [...existingMatchups, newMatchup];
-
-    // Save updated matchups
-    await kv.set('matchups', updatedMatchups);
-
-    return NextResponse.json(newMatchup, { status: 201 });
-  } catch (error) {
-    console.error('Error creating matchup:', error);
-    return NextResponse.json({ error: 'Failed to create matchup' }, { status: 500 });
-  }
+export async function DELETE(request: Request) {
+    const id = request.url.split('/').pop()
+    try {
+        const matchups = await kv.get('matchups') || []
+        const updatedMatchups = matchups.filter((m: any) => m.id !== Number(id))
+        await kv.set('matchups', updatedMatchups)
+        return NextResponse.json({ message: 'Matchup deleted successfully' })
+    } catch (error) {
+        console.error('Error deleting matchup:', error)
+        return NextResponse.json({ error: 'Failed to delete matchup' }, { status: 500 })
+    }
 }

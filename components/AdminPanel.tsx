@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,66 +13,162 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { PlusCircle, Pencil, Trash2, Upload, BarChart, PieChart, TrendingUp, Download } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useForm, SubmitHandler } from "react-hook-form"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Toast } from "@/components/ui/toast"
+import { useSession, signOut } from "next-auth/react"
 
-const chartData = [
-    { name: 'Jan', views: 4000, downloads: 2400 },
-    { name: 'Feb', views: 3000, downloads: 1398 },
-    { name: 'Mar', views: 2000, downloads: 9800 },
-    { name: 'Apr', views: 2780, downloads: 3908 },
-    { name: 'May', views: 1890, downloads: 4800 },
-    { name: 'Jun', views: 2390, downloads: 3800 },
-    { name: 'Jul', views: 3490, downloads: 4300 },
-]
+interface Matchup {
+    id: number;
+    title: string;
+    category: string;
+    image: string;
+    views: number;
+    downloads: number;
+    description: string;
+}
+
+interface MatchupFormInputs {
+    title: string;
+    category: string;
+    description: string;
+    image: FileList;
+}
+
+interface ChartDataPoint {
+    name: string;
+    views: number;
+    downloads: number;
+}
 
 export default function AdminPanel() {
     const [activeTab, setActiveTab] = useState('dashboard')
-    const [matchups, setMatchups] = useState([
-        { id: 1, title: 'Messi vs Ronaldo', category: 'Sports', image: '/messi-ronaldo.jpg', views: 10000, downloads: 5000 },
-        { id: 2, title: 'Lion vs Tiger', category: 'Animals', image: '/lion-tiger.jpg', views: 8000, downloads: 4000 },
-        { id: 3, title: 'Batman vs Joker', category: 'Comics', image: '/batman-joker.jpg', views: 12000, downloads: 6000 },
-        { id: 4, title: 'Pikachu vs Charizard', category: 'Cartoons', image: '/pikachu-charizard.jpg', views: 9000, downloads: 4500 },
-    ])
-    const [categories, setCategories] = useState(['Sports', 'Animals', 'Cartoons', 'Comics', 'Movies', 'History', 'Pop Culture'])
+    const [matchups, setMatchups] = useState<Matchup[]>([])
+    const [categories, setCategories] = useState<string[]>([])
+    const [chartData, setChartData] = useState<ChartDataPoint[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [showToast, setShowToast] = useState(false)
+    const [toastMessage, setToastMessage] = useState('')
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+    const [itemToDelete, setItemToDelete] = useState<number | null>(null)
+
+    const router = useRouter()
+    const { status } = useSession()
+
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<MatchupFormInputs>()
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/login")
+        }
+    }, [status, router])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true)
+            try {
+                const [matchupsRes, categoriesRes, chartDataRes] = await Promise.all([
+                    fetch('/api/matchups'),
+                    fetch('/api/categories'),
+                    fetch('/api/analytics')
+                ])
+                if (!matchupsRes.ok || !categoriesRes.ok || !chartDataRes.ok) throw new Error('Failed to fetch data')
+                const matchupsData = await matchupsRes.json()
+                const categoriesData = await categoriesRes.json()
+                const chartData = await chartDataRes.json()
+                setMatchups(matchupsData)
+                setCategories(categoriesData)
+                setChartData(chartData)
+            } catch (err) {
+                setError('Failed to load data. Please try again.')
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchData()
+    }, [])
+
+    const handleAddMatchup: SubmitHandler<MatchupFormInputs> = async (data) => {
+        setIsLoading(true)
+        try {
+            const imageUrl = await uploadImage(data.image[0])
+            const response = await fetch('/api/matchups', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...data, image: imageUrl }),
+            })
+            if (!response.ok) throw new Error('Failed to add matchup')
+            const newMatchup = await response.json()
+            setMatchups(prev => [...prev, newMatchup])
+            reset()
+            showToastMessage('Matchup added successfully')
+        } catch (err) {
+            setError('Failed to add matchup. Please try again.')
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleDeleteMatchup = async (id: number) => {
+        setIsLoading(true)
+        try {
+            const response = await fetch(`/api/matchups/${id}`, { method: 'DELETE' })
+            if (!response.ok) throw new Error('Failed to delete matchup')
+            setMatchups(prev => prev.filter(matchup => matchup.id !== id))
+            showToastMessage('Matchup deleted successfully')
+        } catch (err) {
+            setError('Failed to delete matchup. Please try again.')
+        } finally {
+            setIsLoading(false)
+            setDeleteConfirmOpen(false)
+        }
+    }
+
+    const handleAddCategory = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        const formData = new FormData(event.currentTarget)
+        const newCategory = formData.get('category-name') as string
+        setIsLoading(true)
+        try {
+            const response = await fetch('/api/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newCategory }),
+            })
+            if (!response.ok) throw new Error('Failed to add category')
+            setCategories(prev => [...prev, newCategory])
+            showToastMessage('Category added successfully')
+        } catch (err) {
+            setError('Failed to add category. Please try again.')
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const uploadImage = async (file: File): Promise<string> => {
+        const formData = new FormData()
+        formData.append('file', file)
+        const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+        })
+        if (!response.ok) throw new Error('Failed to upload image')
+        const data = await response.json()
+        return data.url
+    }
+
+    const showToastMessage = (message: string) => {
+        setToastMessage(message)
+        setShowToast(true)
+        setTimeout(() => setShowToast(false), 3000)
+    }
 
     const totalViews = matchups.reduce((sum, matchup) => sum + matchup.views, 0)
     const totalDownloads = matchups.reduce((sum, matchup) => sum + matchup.downloads, 0)
 
-    const handleAddMatchup = (event: React.FormEvent) => {
-        event.preventDefault()
-        // Implement matchup addition logic here
-        console.log('Adding new matchup')
-    }
-
-    const handleAddCategory = (event: React.FormEvent) => {
-        event.preventDefault()
-        // Implement category addition logic here
-        console.log('Adding new category')
-    }
-
-    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0]
-        if (!file) return
-
-        const formData = new FormData()
-        formData.append('file', file)
-
-        try {
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            })
-            const data = await response.json()
-
-            if (response.ok) {
-                console.log('Image uploaded successfully:', data.url)
-                // Use this URL when creating or updating a matchup
-            } else {
-                console.error('Upload failed:', data.error)
-            }
-        } catch (error) {
-            console.error('Upload error:', error)
-        }
-    }
+    if (isLoading) return <div>Loading...</div>
+    if (error) return <div>Error: {error}</div>
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -83,7 +180,7 @@ export default function AdminPanel() {
                             <span className="text-2xl font-bold text-gray-900">Admin Panel</span>
                         </div>
                         <nav>
-                            <Button variant="ghost">Logout</Button>
+                            <Button variant="ghost" onClick={() => signOut()}>Logout</Button>
                         </nav>
                     </div>
                 </div>
@@ -221,15 +318,16 @@ export default function AdminPanel() {
                                 <CardDescription>Add, edit, or remove matchups</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <form onSubmit={handleAddMatchup} className="space-y-4 mb-8">
+                                <form onSubmit={handleSubmit(handleAddMatchup)} className="space-y-4 mb-8">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="matchup-title">Matchup Title</Label>
-                                            <Input id="matchup-title" placeholder="e.g., Messi vs Ronaldo" />
+                                            <Input id="matchup-title" {...register("title", { required: "Title is required" })} />
+                                            {errors.title && <span>{errors.title.message}</span>}
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor="matchup-category">Category</Label>
-                                            <Select>
+                                            <Select onValueChange={(value) => register("category").onChange({ target: { value } })}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a category" />
                                                 </SelectTrigger>
@@ -243,11 +341,11 @@ export default function AdminPanel() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="matchup-description">Description</Label>
-                                        <Textarea id="matchup-description" placeholder="Enter a brief description of the matchup" />
+                                        <Textarea id="matchup-description" {...register("description")} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="matchup-image">Upload Image</Label>
-                                        <Input id="matchup-image" type="file" accept="image/*" onChange={handleImageUpload} />
+                                        <Input id="matchup-image" type="file" accept="image/*" {...register("image")} />
                                     </div>
                                     <Button type="submit">Add Matchup</Button>
                                 </form>
@@ -262,7 +360,6 @@ export default function AdminPanel() {
                                             <TableHead>Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
-                                    <TableBody></TableBody>
                                     <TableBody>
                                         {matchups.map((matchup) => (
                                             <TableRow key={matchup.id}>
@@ -273,7 +370,23 @@ export default function AdminPanel() {
                                                 <TableCell>
                                                     <div className="flex space-x-2">
                                                         <Button variant="outline" size="sm"><Pencil className="h-4 w-4" /></Button>
-                                                        <Button variant="outline" size="sm"><Trash2 className="h-4 w-4" /></Button>
+                                                        <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+                                                            <DialogTrigger asChild>
+                                                                <Button variant="outline" size="sm" onClick={() => setItemToDelete(matchup.id)}><Trash2 className="h-4 w-4" /></Button>
+                                                            </DialogTrigger>
+                                                            <DialogContent>
+                                                                <DialogHeader>
+                                                                    <DialogTitle>Are you sure you want to delete this matchup?</DialogTitle>
+                                                                    <DialogDescription>
+                                                                        This action cannot be undone.
+                                                                    </DialogDescription>
+                                                                </DialogHeader>
+                                                                <div className="flex justify-end space-x-2">
+                                                                    <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
+                                                                    <Button variant="destructive" onClick={() => itemToDelete && handleDeleteMatchup(itemToDelete)}>Delete</Button>
+                                                                </div>
+                                                            </DialogContent>
+                                                        </Dialog>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
@@ -294,7 +407,7 @@ export default function AdminPanel() {
                                 <form onSubmit={handleAddCategory} className="space-y-4 mb-8">
                                     <div className="space-y-2">
                                         <Label htmlFor="category-name">Category Name</Label>
-                                        <Input id="category-name" placeholder="e.g., Science Fiction" />
+                                        <Input id="category-name" name="category-name" placeholder="e.g., Science Fiction" />
                                     </div>
                                     <Button type="submit">Add Category</Button>
                                 </form>
@@ -335,7 +448,7 @@ export default function AdminPanel() {
                                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                                         <Upload className="mx-auto h-12 w-12 text-gray-400" />
                                         <p className="mt-2 text-sm text-gray-600">Drag and drop images here, or click to select files</p>
-                                        <Input id="image-upload" type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
+                                        <Input id="image-upload" type="file" accept="image/*" multiple className="hidden" />
                                         <Button variant="outline" className="mt-4">
                                             <Label htmlFor="image-upload" className="cursor-pointer">Select Files</Label>
                                         </Button>
@@ -349,6 +462,12 @@ export default function AdminPanel() {
                     </TabsContent>
                 </Tabs>
             </main>
+
+            {showToast && (
+                <Toast>
+                    {toastMessage}
+                </Toast>
+            )}
         </div>
     )
 }
