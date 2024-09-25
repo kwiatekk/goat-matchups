@@ -20,7 +20,7 @@ export default function TermsPage() {
         </p>
         <h2 className="text-2xl font-bold mt-6 mb-2">3. Disclaimer</h2>
         <p className="mb-4">
-          The materials on GOAT Matchups are provided on an 'as is' basis. GOAT Matchups makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties.
+          The materials on GOAT Matchups are provided on an &apos;as is&apos; basis. GOAT Matchups makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties.
         </p>
         <h2 className="text-2xl font-bold mt-6 mb-2">4. Limitations</h2>
         <p className="mb-4">

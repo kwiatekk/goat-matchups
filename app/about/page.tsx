@@ -31,8 +31,8 @@ export default function AboutPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
           <p className="mb-4">
-            At GOAT Matchups, we&apos;re passionate about bringing iconic rivalries to life through the art of coloring. 
-            Our mission is to provide a fun and educational platform where users of all ages can explore fascinating 
+            At GOAT Matchups, we&apos;re passionate about bringing iconic rivalries to life through the art of coloring.
+            Our mission is to provide a fun and educational platform where users of all ages can explore fascinating
             comparisons from various fields.
           </p>
         </section>
@@ -40,7 +40,7 @@ export default function AboutPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">What We Offer</h2>
           <p className="mb-4">
-            Whether you&apos;re a sports enthusiast, a pop culture aficionado, or simply love coloring, GOAT Matchups 
+            Whether you&apos;re a sports enthusiast, a pop culture aficionado, or simply love coloring, GOAT Matchups
             has something for everyone. Our diverse collection includes:
           </p>
           <ul className="list-disc pl-6 mb-4">
@@ -54,7 +54,7 @@ export default function AboutPage() {
         <section>
           <h2 className="text-2xl font-semibold mb-4">Join the GOAT Matchups Community</h2>
           <p>
-            Dive into our ever-growing collection and bring these legendary matchups to life with your unique color choices. 
+            Dive into our ever-growing collection and bring these legendary matchups to life with your unique color choices.
             Join our community of coloring enthusiasts and share your creations with the world!
           </p>
         </section>

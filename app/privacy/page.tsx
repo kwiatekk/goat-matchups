@@ -3,66 +3,94 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'Terms of Use | GOAT Matchups',
-  description: 'Read and understand the Terms of Use for GOAT Matchups. Learn about your rights and responsibilities when using our iconic rivalry coloring pages.',
+  title: 'Privacy Policy | GOAT Matchups',
+  description: 'Learn about how GOAT Matchups collects, uses, and protects your personal information by reading our Privacy Policy.',
   openGraph: {
-    title: 'Terms of Use | GOAT Matchups',
-    description: 'Before using GOAT Matchups, please read our Terms of Use to understand the rules and guidelines governing the use of our platform.',
+    title: 'Privacy Policy | GOAT Matchups',
+    description: 'Understand how GOAT Matchups handles your data, including the collection, usage, and protection of personal information.',
     type: 'website',
-    url: 'https://www.goatmatchups.com/terms',
+    url: 'https://www.goatmatchups.com/policy',
     images: [
       {
         url: 'https://www.goatmatchups.com/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'GOAT Matchups Terms of Use',
+        alt: 'GOAT Matchups Privacy Policy',
       },
     ],
   },
 }
 
-export default function TermsPage() {
+
+
+export default function PrivacyPolicyPage() {
   return (
     <>
       <Header />
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-6">Terms of Use</h1>
-        <p className="mb-6">
-          Welcome to GOAT Matchups. By using our website, you agree to comply with and be bound by the following terms and conditions of use.
+        <h1 className="text-3xl font-bold mb-4">Privacy Policy</h1>
+        <p className="mb-4">
+          At GOAT Matchups, we are committed to protecting your privacy. This Privacy Policy outlines how we collect, use, and safeguard your personal information when you use our website, <a href="https://www.goatmatchups.com" className="text-blue-500 underline">goatmatchups.com</a>.
         </p>
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
-          <p className="mb-4">
-            By accessing or using GOAT Matchups, you agree to be bound by these Terms of Use and all applicable laws and regulations. If you do not agree with any part of these terms, you may not use our service.
-          </p>
-        </section>
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">2. Use License</h2>
-          <p className="mb-4">
-            Permission is granted to temporarily download one copy of the materials on GOAT Matchups for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
-          </p>
-          <ul className="list-disc pl-6 mb-4">
-            <li>Modify or copy the materials</li>
-            <li>Use the materials for any commercial purpose</li>
-            <li>Attempt to decompile or reverse engineer any software contained on GOAT Matchups</li>
-            <li>Remove any copyright or other proprietary notations from the materials</li>
-          </ul>
-        </section>
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">3. Disclaimer</h2>
-          <p className="mb-4">
-            The materials on GOAT Matchups are provided on an 'as is' basis. GOAT Matchups makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
-          </p>
-        </section>
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">4. Limitations</h2>
-          <p className="mb-4">
-            In no event shall GOAT Matchups or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on GOAT Matchups, even if GOAT Matchups or a GOAT Matchups authorized representative has been notified orally or in writing of the possibility of such damage.
-          </p>
-          <p>
-            For any questions regarding these terms, please contact us at legal@goatmatchups.com.
-          </p>
-        </section>
+
+        <h2 className="text-2xl font-bold mt-6 mb-2">1. Information We Collect</h2>
+        <p className="mb-4">
+          We may collect the following types of information from users:
+        </p>
+        <ul className="list-disc pl-6 mb-4">
+          <li><strong>Personal Information:</strong> This includes your name, email address, and any other details you provide when filling out forms on our site.</li>
+          <li><strong>Usage Data:</strong> We collect information about how you interact with our website, such as pages viewed, time spent, and browser type.</li>
+        </ul>
+
+        <h2 className="text-2xl font-bold mt-6 mb-2">2. How We Use Your Information</h2>
+        <p className="mb-4">
+          The information we collect is used for the following purposes:
+        </p>
+        <ul className="list-disc pl-6 mb-4">
+          <li>To provide and improve our services</li>
+          <li>To communicate with you, such as responding to inquiries or sending updates</li>
+          <li>To analyze usage trends and improve the user experience on our website</li>
+          <li>To comply with legal obligations</li>
+        </ul>
+
+        <h2 className="text-2xl font-bold mt-6 mb-2">3. Sharing of Information</h2>
+        <p className="mb-4">
+          We do not sell, trade, or otherwise transfer your personal information to outside parties without your consent, except in the following circumstances:
+        </p>
+        <ul className="list-disc pl-6 mb-4">
+          <li>To trusted third parties who assist us in operating our website, conducting our business, or servicing you, so long as those parties agree to keep this information confidential</li>
+          <li>When required by law or to protect our rights or comply with a legal obligation</li>
+        </ul>
+
+        <h2 className="text-2xl font-bold mt-6 mb-2">4. Cookies</h2>
+        <p className="mb-4">
+          GOAT Matchups uses cookies to enhance your experience. Cookies are small files that a site or its service provider transfers to your device through your web browser that enables the site's systems to recognize your browser and capture certain information. You may choose to disable cookies via your browser settings, but note that some features of our website may not function properly without them.
+        </p>
+
+        <h2 className="text-2xl font-bold mt-6 mb-2">5. Data Security</h2>
+        <p className="mb-4">
+          We take reasonable precautions to protect your personal information. However, please note that no method of transmission over the Internet or method of electronic storage is 100% secure, and we cannot guarantee absolute security.
+        </p>
+
+        <h2 className="text-2xl font-bold mt-6 mb-2">6. Third-Party Links</h2>
+        <p className="mb-4">
+          Our website may contain links to third-party websites. These third-party sites have separate and independent privacy policies, and we have no responsibility or liability for the content or activities of these linked sites.
+        </p>
+
+        <h2 className="text-2xl font-bold mt-6 mb-2">7. Children's Privacy</h2>
+        <p className="mb-4">
+          GOAT Matchups is not directed to children under the age of 13, and we do not knowingly collect personal information from children under 13. If we become aware that we have inadvertently received personal information from a child under 13, we will take steps to delete the information as soon as possible.
+        </p>
+
+        <h2 className="text-2xl font-bold mt-6 mb-2">8. Changes to This Policy</h2>
+        <p className="mb-4">
+          We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. We encourage you to review this policy periodically for any updates.
+        </p>
+
+        <h2 className="text-2xl font-bold mt-6 mb-2">9. Contact Us</h2>
+        <p className="mb-4">
+          If you have any questions or concerns about this Privacy Policy or how we handle your personal information, please contact us at <a href="mailto:support@goatmatchups.com" className="text-blue-500 underline">support@goatmatchups.com</a>.
+        </p>
       </main>
       <Footer />
     </>
