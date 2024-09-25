@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
 
         <h2 className="text-2xl font-bold mt-6 mb-2">4. Cookies</h2>
         <p className="mb-4">
-          GOAT Matchups uses cookies to enhance your experience. Cookies are small files that a site or its service provider transfers to your device through your web browser that enables the site's systems to recognize your browser and capture certain information. You may choose to disable cookies via your browser settings, but note that some features of our website may not function properly without them.
+          GOAT Matchups uses cookies to enhance your experience. Cookies are small files that a site or its service provider transfers to your device through your web browser that enables the site&apos;s or its service provider&apos;s systems to recognize your browser and capture and remember certain information. You may choose to disable cookies via your browser settings, but note that some features of our website may not function properly without them.
         </p>
 
         <h2 className="text-2xl font-bold mt-6 mb-2">5. Data Security</h2>
