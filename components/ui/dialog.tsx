@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import { Button } from './button';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,6 +12,7 @@ interface DialogProps {
   children: React.ReactNode;
   size?: 'small' | 'medium' | 'large';
   showCloseButton?: boolean;
+  initialFocus?: React.RefObject<HTMLElement>; // Add this prop for initial focus
 }
 
 const dialogVariants = {
@@ -19,7 +20,6 @@ const dialogVariants = {
   visible: { opacity: 1, scale: 1 },
 };
 
-// Ensure these components are exported correctly
 export const DialogHeader: React.FC = ({ children }) => (
   <div className="mb-4 flex justify-between items-center">{children}</div> 
 );
@@ -55,18 +55,15 @@ export const Dialog: React.FC<DialogProps> = ({
   title,
   children,
   size = 'medium',
-  showCloseButton = true
+  showCloseButton = true,
+  initialFocus // Use the initialFocus prop
 }) => {
-  if (!isOpen) return null;
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape') {
       onClose();
     }
   };
-
-  // Ref for the initial focusable element - moved outside the conditional rendering
-  const initialFocusRef = React.useRef<HTMLButtonElement>(null); 
 
   return (
     <AnimatePresence>
@@ -81,7 +78,7 @@ export const Dialog: React.FC<DialogProps> = ({
           aria-labelledby="dialog-title"
           aria-modal="true" 
         >
-          <FocusTrap>
+          <FocusTrap initialFocus={initialFocus}>
             <motion.div 
               className={`bg-white p-6 rounded-lg shadow-xl ${getSizeClass(size)}`}
               onKeyDown={handleKeyDown}
@@ -102,7 +99,7 @@ export const Dialog: React.FC<DialogProps> = ({
               </DialogHeader>
               <DialogContent>{children}</DialogContent>
               <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={onClose} ref={initialFocusRef}>Cancel</Button>
+                <Button variant="outline" onClick={onClose}>Cancel</Button>
                 <Button variant="destructive" onClick={onConfirm}>Confirm</Button>
               </div>
             </motion.div>
