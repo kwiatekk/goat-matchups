@@ -20,7 +20,7 @@ const dialogVariants = {
 };
 
 export const DialogHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="mb-4 flex justify-between items-center">{children}</div>
+  <div className="mb-4 flex justify-between items-center">{children}</div> 
 );
 
 export const DialogTitle: React.FC<{ children: React.ReactNode; id?: string }> = ({ children, id }) => (
@@ -58,10 +58,10 @@ export const Dialog: React.FC<DialogProps> = ({
           animate="visible"
           exit="hidden"
           variants={dialogVariants}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+          className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
           role="dialog"
           aria-labelledby="dialog-title"
-          aria-modal="true"
+          aria-modal="true" 
         >
           <FocusTrap>
             <motion.div 
@@ -69,7 +69,9 @@ export const Dialog: React.FC<DialogProps> = ({
               onKeyDown={handleKeyDown}
             >
               <DialogHeader>
-                <DialogTitle id="dialog-title">{title}</DialogTitle>
+                <DialogTitle id="dialog-title">
+                  {title}
+                </DialogTitle>
                 {showCloseButton && (
                   <button 
                     onClick={onClose} 
@@ -99,7 +101,7 @@ function getSizeClass(size: 'small' | 'medium' | 'large') {
       return 'max-w-sm';
     case 'large':
       return 'max-w-3xl';
-    default:
+    default: 
       return 'max-w-md';
   }
 }

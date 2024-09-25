@@ -77,7 +77,7 @@ export default function PrivacyPolicyPage() {
           Our website may contain links to third-party websites. These third-party sites have separate and independent privacy policies, and we have no responsibility or liability for the content or activities of these linked sites.
         </p>
 
-        <h2 className="text-2xl font-bold mt-6 mb-2">7. Children's Privacy</h2>
+        <h2 className="text-2xl font-bold mt-6 mb-2">7. Childrens Privacy</h2>
         <p className="mb-4">
           GOAT Matchups is not directed to children under the age of 13, and we do not knowingly collect personal information from children under 13. If we become aware that we have inadvertently received personal information from a child under 13, we will take steps to delete the information as soon as possible.
         </p>
