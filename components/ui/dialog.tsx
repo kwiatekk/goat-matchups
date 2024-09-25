@@ -1,8 +1,8 @@
-import * as React from 'react';
+import * as React from "react";
 import { Button } from './button';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FocusTrap } from '@headlessui/react';
+import { FocusTrap } from '@headlessui/react'; 
 
 interface DialogProps {
   isOpen: boolean;
@@ -19,7 +19,8 @@ const dialogVariants = {
   visible: { opacity: 1, scale: 1 },
 };
 
-export const DialogHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+// Ensure these components are exported correctly
+export const DialogHeader: React.FC = ({ children }) => (
   <div className="mb-4 flex justify-between items-center">{children}</div> 
 );
 
@@ -27,9 +28,25 @@ export const DialogTitle: React.FC<{ children: React.ReactNode; id?: string }> =
   <h2 id={id} className="text-xl font-bold">{children}</h2>
 );
 
-export const DialogContent: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+export const DialogContent: React.FC = ({ children }) => (
   <div className="mb-6">{children}</div>
 );
+
+export const DialogTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>( 
+  ({ children, ...props }, ref) => {
+    return (
+      <Button {...props} ref={ref}>
+        {children}
+      </Button>
+    )
+  }
+)
+
+DialogTrigger.displayName = 'DialogTrigger'
+
+export const DialogDescription: React.FC = ({ children }) => (
+  <p className="text-sm text-gray-500">{children}</p>
+)
 
 export const Dialog: React.FC<DialogProps> = ({
   isOpen,
@@ -48,7 +65,8 @@ export const Dialog: React.FC<DialogProps> = ({
     }
   };
 
-  const initialFocusRef = React.useRef<HTMLButtonElement>(null);
+  // Ref for the initial focusable element - moved outside the conditional rendering
+  const initialFocusRef = React.useRef<HTMLButtonElement>(null); 
 
   return (
     <AnimatePresence>
